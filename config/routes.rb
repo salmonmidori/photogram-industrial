@@ -1,7 +1,6 @@
 Rails.application.routes.draw do
   root "photos#index"
   
-  # get "/users/:id" => "users#show", as: :user
 
   devise_for :users
   
@@ -21,6 +20,5 @@ Rails.application.routes.draw do
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
   get "/:username" => "users#show", as: :user
-
-  
+  get "/:username/liked" => "users#liked", as: :liked
 end
