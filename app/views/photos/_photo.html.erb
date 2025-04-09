@@ -1,11 +1,22 @@
 <div class="row mb-4">
 <div class="col-md-6 offset-md-3">
 <div class="card">
+
+  <ul class="list-group list-group-flush">
+    <li class="list-group-item">
+      <h5 class="card-title"><%= photo.owner.username %></h5>
+      </li>
+      
+    <li class="list-group-item">
 <%= image_tag photo.image_url, class: "card-img-top" %>
+</li>
+    <li class="list-group-item">
   <div class="card-body">
-    <h5 class="card-title"><%= photo.owner.username %></h5>
     <p class="card-text"><%= photo.caption %></p>
   </div>
+  </li>
+
+</ul>
   <ul class="list-group list-group-flush">
     <% photo.comments.each do |comment| %>
     <li class="list-group-item">
