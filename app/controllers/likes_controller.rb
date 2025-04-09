@@ -22,7 +22,12 @@ class LikesController < ApplicationController
   # POST /likes or /likes.json
   def create
     @like = Like.new(like_params)
-
+    new_like = Like.new
+    new_like.photo = Photo.find_by(id: params.fetch("like")["photo_id"])
+    new_like.fan = current_user  # Alternatively, you can fetch params if desired
+    new_like.save
+    redirect_back fallback_location: root_path
+    
     respond_to do |format|
       if @like.save
         format.html { redirect_to @like, notice: "Like was successfully created." }

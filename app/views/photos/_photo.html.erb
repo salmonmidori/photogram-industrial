@@ -1,49 +1,56 @@
 <div class="row mb-4">
-<div class="col-md-6 offset-md-3">
-<div class="card">
-
-  <ul class="list-group list-group-flush">
-    <li class="list-group-item">
-  <div class="d-flex justify-content-between">
-    <div><h5 class="card-title"><%= photo.owner.username %></h5></div>
-    <div>  <%= link_to edit_photo_path(photo), class: "btn btn-outline-secondary" do %>
+  <div class="col-md-6 offset-md-3">
+    <div class="card">
+      
+      <!-- Card header -->
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="card-title mb-0"><%= photo.owner.username %></h5>
+        <div>
+          <%= link_to edit_photo_path(photo), class: "btn btn-outline-secondary" do %>
             <i class="fas fa-edit fa-fw"></i>
           <% end %>
           <%= link_to photo, data: { turbo_method: :delete }, class: "btn btn-outline-secondary" do %>
-             <i class="fas fa-trash fa-fw"></i>
-          <% end %></div>
-  </div>
-
-      </li>
+            <i class="fas fa-trash fa-fw"></i>
+          <% end %>
+        </div>
+      </div>
       
-    <li class="list-group-item">
-<%= image_tag photo.image.url, class: "card-img-top" %>
-</li>
-    <li class="list-group-item">
-  <div class="card-body">
-    <p class="card-text"><%= photo.caption %></p>
-  </div>
-  </li>
-
-</ul>
-  <ul class="list-group list-group-flush">
-    <% photo.comments.each do |comment| %>
-    <li class="list-group-item">
-    <div class="d-flex">
-    <div class="flex-shrink-0">
-    <%= image_tag comment.author.avatar_image_url, class: "rounded-circle me-2", width: "36px" %>
+      <!-- Photo Image -->
+      <%= image_tag photo.image.url, class: "card-img-top" %>
+      
+      <!-- Card Body (Contains caption, likes, comments, and comment form) -->
+      <div class="card-body">
+        <div class="mb-3 d-flex justify-content-between">
+          <%= render "photos/likes", photo: photo %>
+        </div>
+        <p class="card-text"><%= photo.caption %></p>
+        
+        <!-- Comments -->
+        <% photo.comments.each do |comment| %>
+          <div class="d-flex align-items-start mb-2">
+            <div class="flex-shrink-0">
+              <%= image_tag comment.author.avatar_image_url, class: "rounded-circle me-2", width: "36px" %>
+            </div>
+            <div class="flex-grow-1">
+              <h5 class="mt-0 mb-1"><%= comment.author.username %></h5>
+              
+        <div>
+          <%= link_to edit_comment_path(comment), class: "btn btn-outline-secondary" do %>
+            <i class="fas fa-edit fa-fw"></i>
+          <% end %>
+          <%= link_to comment, data: { turbo_method: :delete }, class: "btn btn-outline-secondary" do %>
+            <i class="fas fa-trash fa-fw"></i>
+          <% end %>
+        </div>
+              <p class="mb-0"><%= comment.body %></p>
+            </div>
+          </div>
+        <% end %>
+        
+        <!-- Comment Form -->
+        <%= render "comments/form", comment: photo.comments.build %>
+      </div>
+      
     </div>
-    <div class="flex-grow-1 ms-3">
-    <h5 class="mt-0"><%= comment.author.username %></h5>
-      <p><%= comment.body %></p>
-      </div>
-      </div>
-    </li>
-    <% end %>
-  </ul>
-  <div class="card-body">
-  <%= render "comments/form", comment: photo.comments.build %>
   </div>
-</div>
-</div>
 </div>
