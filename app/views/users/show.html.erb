@@ -1,26 +1,73 @@
 
 <div class="row mb-4">
 <div class="col-md-6 offset-md-3">
- <div class="media-body">
-    <div class="d-flex justify-content-between align-items-center">
-    
-  <div><%= image_tag @user.avatar_image.url, class: "mr-3 rounded-circle", width: "128" %></div>
-      <h1 class="mt-0 mb-3 display-4">
-        alice
-      </h1>
+<div class="media-body">
 
+  <div class="d-flex justify-content-between align-items-center"> <!--row 1-->
+      <div><%= image_tag @user.avatar_image.url, class: "mr-3 rounded-circle", width: "128" %></div>
+      <div><h1 class="mt-0 mb-3 display-4">alice</h1></div>
       <div>
-        <span class="badge text-bg-secondary">
-          <% if @user.private %>Private<% else %>Public<%end%>
-        </span>
+            <span class="badge text-bg-secondary">
+              <% if @user.private %>Private<% else %>Public<%end%>
+            </span>
       </div>
-    </div>
+  </div> <!--row 1-->
   <div class="d-flex justify-content-between">
-  <div><%= @user.followers.count %> followers </div>
-  <div><%= @user.leaders.count %> following </div>
-  <div><%= @user.pending_followers.count %> pending </div>
-  </div>
-
+      <div><%= link_to "#{@user.followers.count} followers", "#", data: { bs_toggle: "modal", bs_target: "#followers" } %>
+        <div class="modal fade" id="followers" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="myModalLabel"><%= @user.username %>'s followers</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <% @user.followers.each do |follower| %>
+                  <%= link_to "#{follower.username}", user_path(follower.username) %> 
+                          <hr>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div><%= link_to "#{@user.leaders.count} following", "#", data: { bs_toggle: "modal", bs_target: "#leaders" } %>
+        <div class="modal fade" id="leaders" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="myModalLabel"><%= @user.username %>'s following</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <% @user.leaders.each do |leader| %>
+                  <%= link_to "#{leader.username}", user_path(leader.username) %> 
+                          <hr>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div><%= link_to "#{@user.pending_followers.count} pending", "#", data: { bs_toggle: "modal", bs_target: "#pending_followers" } %>
+        <div class="modal fade" id="pending_followers" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="myModalLabel"><%= @user.username %>'s pending</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <% @user.pending_followers.each do |pending_follower| %>
+                  <%= link_to "#{pending_follower.username}", user_path(pending_follower.username) %> 
+                          <hr>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+</div>
   <h5> <%= @user.name %> </h5> <br/>
   
   <%= @user.bio %><br/>

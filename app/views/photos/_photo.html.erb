@@ -4,7 +4,16 @@
 
   <ul class="list-group list-group-flush">
     <li class="list-group-item">
-      <h5 class="card-title"><%= photo.owner.username %></h5>
+  <div class="d-flex justify-content-between">
+    <div><h5 class="card-title"><%= photo.owner.username %></h5></div>
+    <div>  <%= link_to edit_photo_path(photo), class: "btn btn-outline-secondary" do %>
+            <i class="fas fa-edit fa-fw"></i>
+          <% end %>
+          <%= link_to photo, data: { turbo_method: :delete }, class: "btn btn-outline-secondary" do %>
+             <i class="fas fa-trash fa-fw"></i>
+          <% end %></div>
+  </div>
+
       </li>
       
     <li class="list-group-item">
