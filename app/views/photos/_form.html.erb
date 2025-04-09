@@ -11,29 +11,14 @@
     </div>
   <% end %>
 
-  <div>
-    <%= form.label :image, style: "display: block" %>
-    <%= form.file_field :image %>
-  </div>
+  <div class="form-group">
+  <%= form.label :image, style: "display: block" %>
+  <%= form.file_field :image, class: "form-control" %>
+</div>
 
-  <div>
-    <%= form.label :comments_count, style: "display: block" %>
-    <%= form.number_field :comments_count %>
-  </div>
-
-  <div>
-    <%= form.label :likes_count, style: "display: block" %>
-    <%= form.number_field :likes_count %>
-  </div>
-
-  <div>
+  <div class="form-group" >
     <%= form.label :caption, style: "display: block" %>
-    <%= form.textarea :caption %>
-  </div>
-
-  <div>
-    <%= form.label :owner_id, style: "display: block" %>
-    <%= form.text_field :owner_id %>
+    <%= form.textarea :caption, class: "form-control" %>
   </div>
 
   <div>
