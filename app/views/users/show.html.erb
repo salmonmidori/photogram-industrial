@@ -5,7 +5,7 @@
 
   <div class="d-flex justify-content-between align-items-center"> <!--row 1-->
       <div><%= image_tag @user.avatar_image.url, class: "mr-3 rounded-circle", width: "128" %></div>
-      <div><h1 class="mt-0 mb-3 display-4">alice</h1></div>
+      <div><h1 class="mt-0 mb-3 display-4"><%= @user.username %></h1></div>
       <div>
             <span class="badge text-bg-secondary">
               <% if @user.private %>Private<% else %>Public<%end%>
@@ -68,6 +68,55 @@
         </div>
       </div>
 </div>
+
+
+<!--Accept or decline buttons-->
+  <% pending_request = current_user.pending_received_follow_requests.find_by(sender_id: @user) %>
+<% if pending_request %>
+
+ <%= form_with(model: pending_request, method: :patch, data: { turbo: :false }) do |form| %>
+  <%= form.hidden_field "status", value: "accepted" %>
+    <%= form.button class: "btn btn-outline-success btn-block mb-3" do %>
+      Accept <%= @user.username %>'s request
+   <% end %>
+   <% end %>
+
+<%= link_to pending_request, class: "btn btn-outline-danger btn-block mb-3", method: :delete do %>
+Decline <%= @user.username %>'s request
+<% end %><br/>
+
+<% end %>
+
+<!--Follow button-->
+
+ <% accepted_sent_follow_request = current_user.accepted_sent_follow_requests.find_by(recipient_id: @user) %>
+  <% pending_sent_follow_request = current_user.pending_sent_follow_requests.find_by(recipient_id: @user) %>
+
+    <% if accepted_sent_follow_request %>
+      <%= link_to accepted_sent_follow_request, class: "btn btn-outline-secondary btn-block", method: :delete do %>
+        Un-follow  
+         <% end %>
+    <% elsif pending_sent_follow_request %>
+      <%= link_to pending_sent_follow_request, class: "btn btn-outline-secondary btn-block", method: :delete do %>
+    Un-request
+    <% end %>
+    <% else %>
+    <%= form_with(model: FollowRequest.new, data: { turbo: :false }) do |form| %>
+  <%= form.hidden_field "recipient_id", value: @user.id %>
+  
+  <%= form.hidden_field "sender_id", value: current_user.id %>
+    <%= form.button class: "btn btn-outline-secondary btn-block" do %>
+      Follow
+    <% end %>
+
+    <% end %>
+    <% end %>
+
+
+    
+
+ <!--rest of bio-->
+
   <h5> <%= @user.name %> </h5> <br/>
   
   <%= @user.bio %><br/>
