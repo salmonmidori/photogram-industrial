@@ -22,15 +22,11 @@ class LikesController < ApplicationController
   # POST /likes or /likes.json
   def create
     @like = Like.new(like_params)
-    new_like = Like.new
-    new_like.photo = Photo.find_by(id: params.fetch("like")["photo_id"])
-    new_like.fan = current_user  # Alternatively, you can fetch params if desired
-    new_like.save
-    redirect_back fallback_location: root_path
-    
+
+
     respond_to do |format|
       if @like.save
-        format.html { redirect_to @like, notice: "Like was successfully created." }
+        format.html { redirect_back fallback_location: root_path, notice: "Like was successfully created." }
         format.json { render :show, status: :created, location: @like }
       else
         format.html { render :new, status: :unprocessable_entity }
@@ -57,7 +53,7 @@ class LikesController < ApplicationController
     @like.destroy!
 
     respond_to do |format|
-      format.html { redirect_to likes_path, status: :see_other, notice: "Like was successfully destroyed." }
+      format.html { redirect_back fallback_location: root_path, status: :see_other, notice: "Like was successfully destroyed." }
       format.json { head :no_content }
     end
   end
@@ -70,6 +66,6 @@ class LikesController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def like_params
-      params.expect(like: [ :fan_id, :photo_id ])
+      params.require(:like).permit("photo_id", "fan_id")
     end
 end
