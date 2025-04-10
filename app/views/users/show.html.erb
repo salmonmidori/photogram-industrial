@@ -1,38 +1,139 @@
-<h1>
-  <%= @user.username %>
-</h1>
-
-<h2>Own photos</h2>
-
-<% @user.own_photos.each do |photo| %>
 
 <div class="row mb-4">
 <div class="col-md-6 offset-md-3">
-<div class="card">
-<%= image_tag photo.image_url, class: "card-img-top" %>
-  <div class="card-body">
-    <h5 class="card-title"><%= photo.owner.username %></h5>
-    <p class="card-text"><%= photo.caption %></p>
-  </div>
-  <ul class="list-group list-group-flush">
-    <% photo.comments.each do |comment| %>
-    <li class="list-group-item">
-    <div class="d-flex">
-    <div class="flex-shrink-0">
-    <%= image_tag comment.author.avatar_image_url, class: "rounded-circle me-2", width: "36px" %>
-    </div>
-    <div class="flex-grow-1 ms-3">
-    <h5 class="mt-0"><%= comment.author.username %></h5>
-      <p><%= comment.body %></p>
+<div class="media-body">
+
+  <div class="d-flex justify-content-between align-items-center"> <!--row 1-->
+      <div><%= image_tag @user.avatar_image.url, class: "mr-3 rounded-circle", width: "128" %></div>
+      <div><h1 class="mt-0 mb-3 display-4"><%= @user.username %></h1></div>
+      <div>
+            <span class="badge text-bg-secondary">
+              <% if @user.private %>Private<% else %>Public<%end%>
+            </span>
       </div>
+  </div> <!--row 1-->
+  <div class="d-flex justify-content-between">
+      <div><%= link_to "#{@user.followers.count} followers", "#", data: { bs_toggle: "modal", bs_target: "#followers" } %>
+        <div class="modal fade" id="followers" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="myModalLabel"><%= @user.username %>'s followers</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <% @user.followers.each do |follower| %>
+                  <%= link_to "#{follower.username}", user_path(follower.username) %> 
+                          <hr>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-    </li>
+      <div><%= link_to "#{@user.leaders.count} following", "#", data: { bs_toggle: "modal", bs_target: "#leaders" } %>
+        <div class="modal fade" id="leaders" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="myModalLabel"><%= @user.username %>'s following</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <% @user.leaders.each do |leader| %>
+                  <%= link_to "#{leader.username}", user_path(leader.username) %> 
+                          <hr>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div><%= link_to "#{@user.pending_followers.count} pending", "#", data: { bs_toggle: "modal", bs_target: "#pending_followers" } %>
+        <div class="modal fade" id="pending_followers" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="myModalLabel"><%= @user.username %>'s pending</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <% @user.pending_followers.each do |pending_follower| %>
+                  <%= link_to "#{pending_follower.username}", user_path(pending_follower.username) %> 
+                          <hr>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+</div>
+
+
+<!--Accept or decline buttons-->
+  <% pending_request = current_user.pending_received_follow_requests.find_by(sender_id: @user) %>
+<% if pending_request %>
+
+ <%= form_with(model: pending_request, method: :patch, data: { turbo: :false }) do |form| %>
+  <%= form.hidden_field "status", value: "accepted" %>
+    <%= form.button class: "btn btn-outline-success btn-block mb-3" do %>
+      Accept <%= @user.username %>'s request
+   <% end %>
+   <% end %>
+
+<%= link_to pending_request, class: "btn btn-outline-danger btn-block mb-3", method: :delete do %>
+Decline <%= @user.username %>'s request
+<% end %><br/>
+
+<% end %>
+
+<!--Follow button-->
+
+ <% accepted_sent_follow_request = current_user.accepted_sent_follow_requests.find_by(recipient_id: @user) %>
+  <% pending_sent_follow_request = current_user.pending_sent_follow_requests.find_by(recipient_id: @user) %>
+
+    <% if accepted_sent_follow_request %>
+      <%= link_to accepted_sent_follow_request, class: "btn btn-outline-secondary btn-block", method: :delete do %>
+        Un-follow  
+         <% end %>
+    <% elsif pending_sent_follow_request %>
+      <%= link_to pending_sent_follow_request, class: "btn btn-outline-secondary btn-block", method: :delete do %>
+    Un-request
     <% end %>
-  </ul>
-  <div class="card-body">
-  <%= render "comments/form", comment: photo.comments.build %>
-  </div>
+    <% else %>
+    <%= form_with(model: FollowRequest.new, data: { turbo: :false }) do |form| %>
+  <%= form.hidden_field "recipient_id", value: @user.id %>
+  
+  <%= form.hidden_field "sender_id", value: current_user.id %>
+    <%= form.button class: "btn btn-outline-secondary btn-block" do %>
+      Follow
+    <% end %>
+
+    <% end %>
+    <% end %>
+
+
+    
+
+ <!--rest of bio-->
+
+  <h5> <%= @user.name %> </h5> <br/>
+  
+  <%= @user.bio %><br/>
+  
+  <%= link_to @user.website %>
+
+
+<ul class="nav nav-pills nav-justified">
+  <li class="nav-item">
+    <%= link_to "Posts", user_path(@user.username), class: "nav-link" %>
+  </li>
+  <li class="nav-item">
+    <%= link_to "Liked photos", liked_path(@user.username), class: "nav-link" %>
+  </li>
+</ul>
 </div>
 </div>
-</div>
+<% @user.own_photos.each do |photo| %>
+<%= render "photos/photo", photo: photo %>
 <% end %>

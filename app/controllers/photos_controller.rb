@@ -22,10 +22,13 @@ class PhotosController < ApplicationController
   # POST /photos or /photos.json
   def create
     @photo = Photo.new(photo_params)
+    @photo.image = params.fetch("photo")["image"]
+    @photo.caption = params.fetch("photo")["caption"]
+    @photo.owner = current_user
 
     respond_to do |format|
       if @photo.save
-        format.html { redirect_to @photo, notice: "Photo was successfully created." }
+        format.html { redirect_to @photo, notice: "Photo was successfully created" }
         format.json { render :show, status: :created, location: @photo }
       else
         format.html { render :new, status: :unprocessable_entity }
@@ -65,6 +68,6 @@ class PhotosController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def photo_params
-      params.expect(photo: [ :image, :comments_count, :likes_count, :caption, :owner_id ])
+      params.expect(photo: [ :image, :caption ])
     end
 end
